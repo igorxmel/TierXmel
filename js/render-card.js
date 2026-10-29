@@ -5,6 +5,7 @@ import { criteriaFor } from './score.js';
 import { escapeHtml } from './filters.js';
 import { badgeIcon } from './icons.js';
 import { renderMarkdown } from './markdown.js';
+import { asset, routes } from './site.js';
 
 function scoreBox(label, value, max, tier, note) {
   if (value === null) {
@@ -131,7 +132,7 @@ export function renderCard(container, game, index, review) {
       <header class="card__head">
         <div class="card__art">
           ${game.cover
-            ? `<img src="${escapeHtml(game.cover)}" alt="">`
+            ? `<img src="${escapeHtml(asset(game.cover))}" alt="">`
             : `<span class="card__noart">${escapeHtml(game.title)}</span>`}
         </div>
         <div class="card__intro">
@@ -142,7 +143,7 @@ export function renderCard(container, game, index, review) {
             ? `<p class="rec" style="--tier:${game.recommendationMeta.color}">${escapeHtml(game.recommendationMeta.label)}</p>`
             : ''}
           ${badges ? `<div class="awards">${badges}</div>` : ''}
-          <div class="tags">${(game.tags ?? []).map((tag) => `<a class="chip" href="index.html?tag=${encodeURIComponent(tag)}">${escapeHtml(tag)}</a>`).join('')}</div>
+          <div class="tags">${(game.tags ?? []).map((tag) => `<a class="chip" href="${routes.home(`tag=${encodeURIComponent(tag)}`)}">${escapeHtml(tag)}</a>`).join('')}</div>
         </div>
       </header>
 

@@ -5,6 +5,7 @@ import {
 } from './score.js';
 import * as rawg from './rawg.js';
 import * as gh from './github.js';
+import { asset, routes, gamePageStub, renderChrome } from './site.js';
 
 const RAWG_STORAGE = 'ratingsite.rawg';
 const $ = (id) => document.getElementById(id);
@@ -30,9 +31,10 @@ let reviewText = '';
 // ---------------------------------------------------------------- загрузка
 
 async function boot() {
+  renderChrome('admin', { subtitle: 'админка', footer: false });
   const [metaRes, gamesRes] = await Promise.all([
-    fetch('data/meta.json', { cache: 'no-cache' }),
-    fetch('data/games.json', { cache: 'no-cache' }),
+    fetch(asset('data/meta.json'), { cache: 'no-cache' }),
+    fetch(asset('data/games.json'), { cache: 'no-cache' }),
   ]);
   meta = await metaRes.json();
   rawGames = await gamesRes.json();
@@ -495,6 +497,8 @@ async function save() {
   const files = [{ path: 'data/games.json', text: `${JSON.stringify(rawGames, null, 2)}\n` }];
   if (coverBlob) files.push({ path: `covers/${game.slug}.webp`, base64: await rawg.blobToBase64(coverBlob) });
   if (reviewText.trim()) files.push({ path: `data/reviews/${game.slug}.md`, text: reviewText.trim() + '\n' });
+  // Своя папка у каждой игры даёт адрес вида /game/undertale/ без ?g= в ссылке.
+  files.push({ path: `game/${game.slug}/index.html`, text: gamePageStub() });
 
   status.className = 'status';
   status.textContent = 'Коммичу…';
@@ -502,7 +506,7 @@ async function save() {
     const config = gh.loadConfig();
     const commit = await gh.commitFiles(config, files, `${editingSlug ? 'Правка' : 'Добавлена игра'}: ${game.title}`);
     status.className = 'status status--ok';
-    status.textContent = `Готово: ${commit.sha.slice(0, 7)}. Pages обновятся через полминуты.`;
+    status.innerHTML = `Готово: ${commit.sha.slice(0, 7)}. Через полминуты игра будет на <a href="${routes.game(game.slug)}">своей странице</a>.`;
     editingSlug = game.slug;
     coverBlob = null;
     fillExistingList();
@@ -578,7 +582,7 @@ async function loadExisting(slug) {
   }
 
   if (game.review) {
-    const response = await fetch(`data/reviews/${slug}.md`, { cache: 'no-cache' });
+    const response = await fetch(asset(`data/reviews/${slug}.md`), { cache: 'no-cache' });
     reviewText = response.ok ? await response.text() : '';
   }
 

@@ -1,11 +1,12 @@
 // Загрузка и нормализация данных. Производные поля считает score.js.
 
 import { buildIndex, computeGame, validateMeta, validateGames } from './score.js';
+import { asset } from './site.js';
 
 const PATHS = {
-  meta: 'data/meta.json',
-  games: 'data/games.json',
-  review: (slug) => `data/reviews/${slug}.md`,
+  meta: asset('data/meta.json'),
+  games: asset('data/games.json'),
+  review: (slug) => asset(`data/reviews/${slug}.md`),
 };
 
 let cache = null;

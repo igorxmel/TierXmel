@@ -5,6 +5,7 @@
 // не график. Графики остались там, где есть распределение или связь.
 
 import { escapeHtml, plural } from './filters.js';
+import { routes } from './site.js';
 
 // Ниже этого числа игр корреляция — шум, и показывать её вредно:
 // на трёх точках легко получить «−0.09» и сделать из этого вывод.
@@ -86,7 +87,7 @@ function scatter(games, index) {
 
   // 2px кольцо цветом подложки: точки накладываются, без него они слипаются в пятно.
   const dots = points.map((game) => `
-    <a href="game.html?g=${encodeURIComponent(game.slug)}"
+    <a href="${routes.game(game.slug)}"
        data-title="${escapeHtml(game.title)}"
        data-q="${game.quality}" data-f="${game.fun}">
       <circle cx="${px(game.quality).toFixed(1)}" cy="${py(game.fun).toFixed(1)}" r="8"
@@ -254,7 +255,7 @@ export function renderStats(container, games, index) {
           : 'Все оценённые игры разобраны подробно.'}</p>
       </div>
       <div class="awaiting">${awaiting
-        .map((game) => `<a class="chip" href="game.html?g=${encodeURIComponent(game.slug)}">${escapeHtml(game.title)}</a>`)
+        .map((game) => `<a class="chip" href="${routes.game(game.slug)}">${escapeHtml(game.title)}</a>`)
         .join('')}</div>
     </section>
 

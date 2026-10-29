@@ -7,17 +7,18 @@
 import { axisValue, axisTier } from './score.js';
 import { escapeHtml } from './filters.js';
 import { icon, badgeIcon } from './icons.js';
+import { asset, routes } from './site.js';
 
 export function gameTile(game, axis) {
   const value = axisValue(game, axis);
   const tile = document.createElement('a');
   tile.className = 'tile';
-  tile.href = `game.html?g=${encodeURIComponent(game.slug)}`;
+  tile.href = routes.game(game.slug);
   if (game.quick) tile.classList.add('tile--quick');
 
   // Без обложки название печатается прямо на плитке — подпись снизу тогда не нужна.
   const art = game.cover
-    ? `<img class="tile__cover" src="${escapeHtml(game.cover)}" alt="" loading="lazy">`
+    ? `<img class="tile__cover" src="${escapeHtml(asset(game.cover))}" alt="" loading="lazy">`
     : `<span class="tile__fallback">${escapeHtml(game.title)}</span>`;
 
   const badges = game.badgeList
