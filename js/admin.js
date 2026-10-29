@@ -27,23 +27,46 @@ let detailed = false;
 let coverBlob = null;
 let editingSlug = null;
 let reviewText = '';
+let sourceNote = '';
 
 // ---------------------------------------------------------------- загрузка
 
 async function boot() {
   renderChrome('admin', { subtitle: 'админка', footer: false });
-  const [metaRes, gamesRes] = await Promise.all([
-    fetch(asset('data/meta.json'), { cache: 'no-cache' }),
-    fetch(asset('data/games.json'), { cache: 'no-cache' }),
-  ]);
+  restoreSettings();
+  const metaRes = await fetch(asset('data/meta.json'), { cache: 'no-cache' });
   meta = await metaRes.json();
-  rawGames = await gamesRes.json();
+  rawGames = await loadGames();
   index = buildIndex(meta);
 
-  restoreSettings();
   fillSelects();
   bindEvents();
   fillExistingList();
+  $('results').innerHTML = `<span class="note">${sourceNote}</span>`;
+}
+
+/**
+ * Список игр. С токеном читаем прямо из ветки репозитория: опубликованный сайт
+ * обновляется через минуту после коммита, и правка с другого устройства
+ * или после перезагрузки взяла бы старый список и затёрла предыдущую.
+ */
+async function loadGames() {
+  const config = gh.loadConfig();
+  if (config.token && config.repo) {
+    try {
+      const text = await gh.readFile(config, 'data/games.json');
+      if (text !== null) {
+        sourceNote = 'Список игр загружен из репозитория: самая свежая версия.';
+        return JSON.parse(text);
+      }
+    } catch (error) {
+      sourceNote = `Из репозитория прочитать не вышло (${error.message}), список взят с сайта и может отставать на минуту.`;
+    }
+  } else {
+    sourceNote = 'Без токена список взят с сайта и может отставать от последнего коммита на минуту.';
+  }
+  const response = await fetch(asset('data/games.json'), { cache: 'no-cache' });
+  return response.json();
 }
 
 function restoreSettings() {
@@ -52,6 +75,7 @@ function restoreSettings() {
   $('ghRepo').value = config.repo ?? '';
   $('ghBranch').value = config.branch ?? 'main';
   $('ghToken').value = config.token ?? '';
+  $('ghRemember').checked = config.remember !== false;
   if (!$('rawgKey').value || !config.token) $('settings').open = true;
 }
 
@@ -61,6 +85,7 @@ function persistSettings() {
     repo: $('ghRepo').value.trim(),
     branch: $('ghBranch').value.trim() || 'main',
     token: $('ghToken').value.trim(),
+    remember: $('ghRemember').checked,
   });
 }
 
@@ -212,6 +237,7 @@ function resetDraft() {
 }
 
 function openForm(title) {
+  $('deleteBtn').hidden = !editingSlug;
   $('formTitle').textContent = title;
   $('form').hidden = false;
   syncFormFields();
@@ -233,6 +259,7 @@ function syncFormFields() {
   $('f-hours').value = draft.hours ?? '';
   $('f-finished').value = draft.finishedAt ?? '';
   $('f-rec').value = draft.recommendation ?? '';
+  $('f-hidden').checked = !!draft.draft;
   $('f-fun').value = draft.fun ?? 50;
   $('f-verdict').value = draft.verdict ?? '';
   $('f-review').value = reviewText;
@@ -250,6 +277,7 @@ function readFormFields() {
   draft.hours = $('f-hours').value ? Number($('f-hours').value) : null;
   draft.finishedAt = $('f-finished').value.trim() || null;
   draft.recommendation = $('f-rec').value || null;
+  draft.draft = $('f-hidden').checked;
   draft.fun = Number($('f-fun').value);
   draft.verdict = $('f-verdict').value.trim();
   reviewText = $('f-review').value;
@@ -508,6 +536,7 @@ async function save() {
     status.className = 'status status--ok';
     status.innerHTML = `Готово: ${commit.sha.slice(0, 7)}. Через полминуты игра будет на <a href="${routes.game(game.slug)}">своей странице</a>.`;
     editingSlug = game.slug;
+    $('deleteBtn').hidden = false;
     coverBlob = null;
     fillExistingList();
   } catch (error) {
@@ -533,6 +562,48 @@ function exportJson() {
   URL.revokeObjectURL(link.href);
 }
 
+/**
+ * Удаление: запись из games.json и все файлы игры одним коммитом.
+ * Уникальные награды освобождаются сами — они жили в записи игры.
+ */
+async function removeGame() {
+  const slug = editingSlug;
+  const game = rawGames.find((item) => item.slug === slug);
+  if (!game) return;
+  if (!confirm(`Удалить «${game.title}» насовсем? Оценки, рецензия, обложка и страница игры пропадут из репозитория. Скрыть её можно галочкой «Скрыть с сайта».`)) return;
+
+  const status = $('saveStatus');
+  status.className = 'status';
+  status.textContent = 'Удаляю…';
+
+  try {
+    const config = gh.loadConfig();
+    const rest = rawGames.filter((item) => item.slug !== slug);
+    const files = [{ path: 'data/games.json', text: `${JSON.stringify(rest, null, 2)}
+` }];
+
+    // GitHub не даёт удалить путь, которого нет, поэтому проверяем каждый.
+    const candidates = [`game/${slug}/index.html`, `data/reviews/${slug}.md`];
+    if (game.cover && !rest.some((item) => item.cover === game.cover)) candidates.push(game.cover);
+    for (const path of candidates) {
+      if (await gh.fileExists(config, path)) files.push({ path, delete: true });
+    }
+
+    const commit = await gh.commitFiles(config, files, `Удалена игра: ${game.title}`);
+    rawGames = rest;
+    resetDraft();
+    $('form').hidden = true;
+    $('editExisting').value = '';
+    fillExistingList();
+    status.className = 'status status--ok';
+    status.textContent = `Удалено: ${commit.sha.slice(0, 7)}.`;
+    $('results').innerHTML = `<span class="status status--ok">«${game.title}» удалена: ${commit.sha.slice(0, 7)}. С сайта пропадёт через минуту.</span>`;
+  } catch (error) {
+    status.className = 'status status--err';
+    status.textContent = error.message;
+  }
+}
+
 // ---------------------------------------------------------------- редактирование
 
 function fillExistingList() {
@@ -541,7 +612,7 @@ function fillExistingList() {
   select.innerHTML = '<option value="">Редактировать существующую</option>'
     + [...rawGames]
       .sort((a, b) => a.title.localeCompare(b.title))
-      .map((game) => `<option value="${game.slug}">${game.title}</option>`)
+      .map((game) => `<option value="${game.slug}">${game.title}${game.draft ? ' (скрыта)' : ''}</option>`)
       .join('');
   select.value = current;
 }
@@ -582,8 +653,16 @@ async function loadExisting(slug) {
   }
 
   if (game.review) {
-    const response = await fetch(asset(`data/reviews/${slug}.md`), { cache: 'no-cache' });
-    reviewText = response.ok ? await response.text() : '';
+    const config = gh.loadConfig();
+    let text = null;
+    if (config.token) {
+      try { text = await gh.readFile(config, `data/reviews/${slug}.md`); } catch { /* возьмём с сайта */ }
+    }
+    if (text === null) {
+      const response = await fetch(asset(`data/reviews/${slug}.md`), { cache: 'no-cache' });
+      text = response.ok ? await response.text() : '';
+    }
+    reviewText = text;
   }
 
   openForm(`Правка: ${draft.title}`);
@@ -592,7 +671,7 @@ async function loadExisting(slug) {
 // ---------------------------------------------------------------- события
 
 function bindEvents() {
-  for (const id of ['rawgKey', 'ghRepo', 'ghBranch', 'ghToken']) {
+  for (const id of ['rawgKey', 'ghRepo', 'ghBranch', 'ghToken', 'ghRemember']) {
     $(id).addEventListener('change', persistSettings);
   }
 
@@ -652,6 +731,8 @@ function bindEvents() {
   });
 
   $('saveBtn').addEventListener('click', save);
+  $('deleteBtn').addEventListener('click', removeGame);
+  $('f-hidden').addEventListener('change', update);
   $('exportBtn').addEventListener('click', exportJson);
 }
 

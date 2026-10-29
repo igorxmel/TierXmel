@@ -6,18 +6,33 @@
 
 const API = 'https://api.github.com';
 const STORAGE_KEY = 'ratingsite.github';
+const TOKEN_KEY = 'ratingsite.github.token';
 
+// Репозиторий и ветка живут в localStorage всегда. Токен — только если
+// включено «запомнить»: иначе он в sessionStorage и исчезает с закрытием вкладки.
 export function loadConfig() {
+  let config = { repo: '', branch: 'main', remember: true };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : { repo: '', token: '', branch: 'main' };
-  } catch {
-    return { repo: '', token: '', branch: 'main' };
+    if (raw) config = { ...config, ...JSON.parse(raw) };
+  } catch { /* битая запись — начинаем с пустой */ }
+
+  // Старый формат хранил токен прямо в общей записи — переносим.
+  if (config.token) {
+    localStorage.setItem(TOKEN_KEY, config.token);
+    delete config.token;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
   }
+
+  config.token = localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY) ?? '';
+  return config;
 }
 
-export function saveConfig(config) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+export function saveConfig({ token = '', remember = true, ...rest }) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...rest, remember }));
+  localStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  if (token) (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
 }
 
 function headers(config) {
@@ -69,6 +84,11 @@ export async function commitFiles(config, files, message) {
 
   const tree = [];
   for (const file of files) {
+    // sha: null в дереве удаляет файл в том же коммите.
+    if (file.delete) {
+      tree.push({ path: file.path, mode: '100644', type: 'blob', sha: null });
+      continue;
+    }
     const blob = await call(config, '/git/blobs', {
       method: 'POST',
       body: JSON.stringify(
@@ -109,4 +129,14 @@ export async function readFile(config, path) {
   const binary = atob(data.content.replace(/\n/g, ''));
   const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
   return new TextDecoder().decode(bytes);
+}
+
+/** Есть ли файл в ветке. Удалять несуществующий путь GitHub не даёт. */
+export async function fileExists(config, path) {
+  const branch = config.branch || 'main';
+  const url = `${API}/repos/${config.repo}/contents/${path}?ref=${encodeURIComponent(branch)}`;
+  const response = await fetch(url, { method: 'GET', headers: headers(config) });
+  if (response.status === 404) return false;
+  if (!response.ok) throw new Error(`GitHub ${response.status} при проверке ${path}`);
+  return true;
 }

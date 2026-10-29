@@ -31,6 +31,8 @@
         <label>GitHub token (fine-grained, Contents: write)
           <input type="password" id="ghToken" autocomplete="off" placeholder="github_pat_...">
         </label>
+        <label class="check"><input type="checkbox" id="ghRemember" checked> Запомнить токен в этом браузере</label>
+        <p class="note" style="grid-column:1/-1">Без галочки токен живёт, только пока открыта вкладка: удобно на чужом компьютере.</p>
         <div class="row-actions">
           <button type="button" class="btn" id="checkAccess">Проверить доступ</button>
           <span class="status" id="accessStatus"></span>
@@ -68,6 +70,7 @@
           <label>Наиграно часов<input type="number" id="f-hours" min="0" placeholder="необязательно"></label>
           <label>Когда прошёл (год-месяц)<input type="text" id="f-finished" placeholder="например 2024-05"></label>
           <label>Рекомендация<select id="f-rec" class="select"></select></label>
+          <label class="check"><input type="checkbox" id="f-hidden"> Скрыть с сайта</label>
         </div>
 
         <fieldset class="block">
@@ -126,6 +129,7 @@
       <div class="panel__body row-actions">
         <button type="button" class="btn btn--primary" id="saveBtn">Сохранить и закоммитить</button>
         <button type="button" class="btn" id="exportBtn">Скачать games.json</button>
+        <button type="button" class="btn btn--danger" id="deleteBtn" hidden>Удалить игру</button>
         <span class="status" id="saveStatus"></span>
       </div>
     </form>
