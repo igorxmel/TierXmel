@@ -1,0 +1,164 @@
+{
+  "scale": {
+    "qualityMax": 900,
+    "funMax": 100,
+    "criterionMax": 10,
+    "minCoverage": 0.7
+  },
+
+  "scaleAnchors": {
+    "10": "эталон жанра",
+    "9": "выдающееся",
+    "8": "очень хорошо",
+    "7": "хорошо",
+    "6": "выше нормы",
+    "5": "ровно норма жанра",
+    "4": "ниже нормы",
+    "3": "слабо",
+    "2": "плохо",
+    "1": "ужасно",
+    "0": "отсутствует"
+  },
+
+  "tiers": [
+    { "id": "SSS", "label": "SSS", "desc": "Идеал. Докопаться невозможно", "threshold": 100, "color": "#f9eed1", "emptyNote": "место свободно" },
+    { "id": "SS",  "label": "SS",  "desc": "Шедевр",            "threshold": 88, "color": "#ff8689" },
+    { "id": "S",   "label": "S",   "desc": "Топ",               "threshold": 78, "color": "#fe9b61" },
+    { "id": "A",   "label": "A",   "desc": "Очень хороший",     "threshold": 67, "color": "#eebc4a" },
+    { "id": "B",   "label": "B",   "desc": "Хороший",           "threshold": 56, "color": "#afd46a" },
+    { "id": "C",   "label": "C",   "desc": "Средняк, на один раз", "threshold": 44, "color": "#69d6aa" },
+    { "id": "D",   "label": "D",   "desc": "Плохо",             "threshold": 33, "color": "#57c0e6" },
+    { "id": "F",   "label": "F",   "desc": "Мусор",             "threshold": 0.0001, "color": "#9d99ed" },
+    { "id": "NPK", "label": "Не поддаётся критике", "desc": "Разбирать нет смысла", "threshold": 0, "color": "#90847a" }
+  ],
+
+  "blocks": [
+    {
+      "id": "gameplay",
+      "label": "Геймплей",
+      "formOrder": 4,
+      "criteria": [
+        { "id": "loop",        "label": "Основной цикл",   "hint": "Приятно ли просто выполнять базовое действие игры — стрелять, прыгать, строить, кликать — без всякой награды сверху?" },
+        { "id": "variety",     "label": "Разнообразие",    "hint": "Сколько принципиально разных ситуаций и механик игра успевает предложить до того, как начинает повторяться?" },
+        { "id": "balance",     "label": "Баланс и сложность", "hint": "Сложность растёт честно или скачками? Есть ли доминирующая стратегия, убивающая все остальные?" },
+        { "id": "controls",    "label": "Управление и отзывчивость", "hint": "Делает ли персонаж ровно то, что ты нажал, и ровно тогда? Сколько смертей были не твоей ошибкой?" },
+        { "id": "progression", "label": "Прогрессия",      "hint": "Открывается ли что-то новое по ходу игры — механики, способности, доступ, — или ты всю игру играешь одинаково?" },
+        { "id": "replay",      "label": "Реиграбельность", "hint": "Есть ли причина пройти второй раз: другой билд, ветка, сложность, концовка? Или всё увидено за один прогон?" }
+      ]
+    },
+    {
+      "id": "story",
+      "label": "Сюжет",
+      "formOrder": 5,
+      "criteria": [
+        { "id": "characters", "label": "Персонажи",        "hint": "Сколько персонажей ты помнишь по имени через месяц после прохождения? Меняются ли они по ходу истории?" },
+        { "id": "lore",       "label": "Лор и мир",        "hint": "Устроен ли мир по собственным правилам, которые игра соблюдает? Хочется ли читать описания и копать вглубь?" },
+        { "id": "delivery",   "label": "Подача",           "hint": "Как рассказано: через катсцены, диалоги, окружение, механику? Уместен ли способ подачи или вырывает из игры?" },
+        { "id": "dialogue",   "label": "Сценарий и диалоги", "hint": "Говорят ли персонажи как люди? Есть ли реплики, которые ты бы процитировал?" },
+        { "id": "ending",     "label": "Финал",            "hint": "Закрывает ли финал то, что игра обещала? Чувство «вот ради этого всё» или «и это всё?»" }
+      ]
+    },
+    {
+      "id": "visual",
+      "label": "Визуал",
+      "formOrder": 3,
+      "criteria": [
+        { "id": "identity",  "label": "Самобытность стиля", "hint": "Узнаешь ли ты игру по одному скриншоту без интерфейса? Оценивай относительно года выхода." },
+        { "id": "execution", "label": "Реализация стиля",   "hint": "Насколько качественно сделано именно то, что задумано? Выдержан ли стиль целиком или ломается местами? Относительно года выхода." },
+        { "id": "detail",    "label": "Проработанность",    "hint": "Если остановиться и посмотреть по сторонам — есть ли что разглядывать? Относительно года выхода." },
+        { "id": "animation", "label": "Анимация и эффекты", "hint": "Выглядит ли движение живым, читается ли удар и реакция? Относительно года выхода." },
+        { "id": "ui",        "label": "Интерфейс и читаемость", "hint": "Понятно ли с первого взгляда, что происходит на экране и где искать нужное?" }
+      ]
+    },
+    {
+      "id": "sound",
+      "label": "Звук",
+      "formOrder": 2,
+      "criteria": [
+        { "id": "music",         "label": "Музыка",        "hint": "Сколько треков ты бы слушал отдельно от игры? Работает ли музыка на сцену, в которой играет?" },
+        { "id": "sfx",           "label": "Звуковой дизайн", "hint": "Звучат ли действия весомо — удар, шаг, выстрел, клик? Не раздражает ли повторяющийся звук к пятому часу?" },
+        { "id": "voice",         "label": "Озвучка",       "hint": "Играют ли актёры или читают текст? Если озвучки нет вовсе — ставь «н/д», а не ноль." },
+        { "id": "gameplaySound", "label": "Звук в геймплее", "hint": "Можно ли по звуку понять, что происходит вне экрана — откуда враг, что сработало, что изменилось?" }
+      ]
+    },
+    {
+      "id": "world",
+      "label": "Мир и атмосфера",
+      "formOrder": 6,
+      "criteria": [
+        { "id": "atmosphere",  "label": "Атмосфера",         "hint": "Есть ли у игры собственное ощущение, которое остаётся с тобой после выхода из неё?" },
+        { "id": "levelDesign", "label": "Левел-дизайн",      "hint": "Ведёт ли пространство тебя само, без указателей? Интересно ли исследовать то, что не обязательно?" },
+        { "id": "coherence",   "label": "Целостность замысла", "hint": "Тянут ли все части игры в одну сторону, или сюжет воюет с геймплеем, а музыка живёт отдельно?" },
+        { "id": "originality", "label": "Самобытность",      "hint": "Есть ли здесь то, чего ты не видел в других играх? Или это компетентная сборка знакомого?" }
+      ]
+    },
+    {
+      "id": "tech",
+      "label": "Техника",
+      "formOrder": 1,
+      "criteria": [
+        { "id": "performance", "label": "Оптимизация",   "hint": "Держит ли игра стабильный кадр на железе своего времени? Сколько просадок ты заметил?" },
+        { "id": "stability",   "label": "Стабильность",  "hint": "Сколько раз за прохождение ты встретил баг, застрял или потерял прогресс?" },
+        { "id": "polish",      "label": "Качество исполнения и настроек", "hint": "Есть ли нужные настройки, переназначение клавиш, нормальные сохранения, субтитры? Чувствуется ли, что игру доводили?" }
+      ]
+    }
+  ],
+
+  "profiles": [
+    { "id": "story-rpg",    "label": "Сюжетная / RPG",                 "budget": { "gameplay": 200, "story": 250, "visual": 140, "sound": 120, "world": 140, "tech": 50 } },
+    { "id": "action",       "label": "Экшен / шутер",                  "budget": { "gameplay": 300, "story": 120, "visual": 150, "sound": 130, "world": 130, "tech": 70 } },
+    { "id": "visual-novel", "label": "Визуальная новелла / нарративная", "budget": { "gameplay": 80, "story": 330, "visual": 170, "sound": 160, "world": 120, "tech": 40 } },
+    { "id": "sandbox",      "label": "Симулятор / песочница",          "budget": { "gameplay": 320, "story": 50, "visual": 130, "sound": 110, "world": 220, "tech": 70 } },
+    { "id": "strategy",     "label": "Стратегия / тактика",            "budget": { "gameplay": 340, "story": 90, "visual": 120, "sound": 100, "world": 150, "tech": 100 } },
+    { "id": "horror",       "label": "Хоррор",                         "budget": { "gameplay": 200, "story": 180, "visual": 140, "sound": 180, "world": 160, "tech": 40 },
+      "extraCriteria": [ { "block": "world", "id": "fear", "label": "Страх и напряжение", "hint": "Страшно по-настоящему или только громко? Держит ли напряжение, когда ничего не происходит?" } ] },
+    { "id": "platformer",   "label": "Платформер / метроидвания",      "budget": { "gameplay": 330, "story": 90, "visual": 160, "sound": 140, "world": 140, "tech": 40 } },
+    { "id": "puzzle",       "label": "Пазл / эксперимент",             "budget": { "gameplay": 330, "story": 100, "visual": 160, "sound": 150, "world": 110, "tech": 50 } },
+    { "id": "racing",       "label": "Гонки / спорт",                  "budget": { "gameplay": 330, "story": 40, "visual": 170, "sound": 140, "world": 100, "tech": 120 } },
+    { "id": "multiplayer",  "label": "Мультиплеер / сессионка",        "budget": { "gameplay": 380, "story": 40, "visual": 140, "sound": 110, "world": 90, "tech": 140 },
+      "extraCriteria": [ { "block": "gameplay", "id": "pvpBalance", "label": "Баланс сторон", "hint": "Честны ли стартовые условия? Есть ли персонаж, карта или сторона, которые ломают матч?" } ] },
+    { "id": "casual",       "label": "Казуальная / аркадная",          "budget": { "gameplay": 380, "story": 40, "visual": 160, "sound": 140, "world": 120, "tech": 60 } },
+    { "id": "mmo",          "label": "MMO / лайв-сервис",              "budget": { "gameplay": 320, "story": 90, "visual": 130, "sound": 100, "world": 130, "tech": 130 } },
+    { "id": "universal",    "label": "Универсальный",                  "budget": { "gameplay": 250, "story": 150, "visual": 150, "sound": 130, "world": 150, "tech": 70 }, "fallback": true }
+  ],
+
+  "badges": [
+    { "id": "goat-ost",        "label": "GOAT Саундтрек",   "unique": true, "icon": "🏆" },
+    { "id": "goat-story",      "label": "GOAT Сюжет",       "unique": true, "icon": "🏆" },
+    { "id": "goat-characters", "label": "GOAT Персонажи",   "unique": true, "icon": "🏆" },
+    { "id": "goat-visual",     "label": "GOAT Визуал",      "unique": true, "icon": "🏆" },
+    { "id": "goat-atmosphere", "label": "GOAT Атмосфера",   "unique": true, "icon": "🏆" },
+    { "id": "goat-gameplay",   "label": "GOAT Геймплей",    "unique": true, "icon": "🏆" },
+    { "id": "goat-ending",     "label": "GOAT Финал",       "unique": true, "icon": "🏆" },
+    { "id": "goat-world",      "label": "GOAT Мир",         "unique": true, "icon": "🏆" },
+
+    { "id": "top-ost",         "label": "Топ саундтрек",    "unique": false, "icon": "⭐" },
+    { "id": "top-story",       "label": "Топ сюжет",        "unique": false, "icon": "⭐" },
+    { "id": "top-characters",  "label": "Топ персонажи",    "unique": false, "icon": "⭐" },
+    { "id": "top-visual",      "label": "Топ визуал",       "unique": false, "icon": "⭐" },
+    { "id": "top-atmosphere",  "label": "Топ атмосфера",    "unique": false, "icon": "⭐" },
+    { "id": "top-gameplay",    "label": "Топ геймплей",     "unique": false, "icon": "⭐" },
+    { "id": "top-humor",       "label": "Топ юмор",         "unique": false, "icon": "⭐" },
+    { "id": "top-innovation",  "label": "Новаторство",      "unique": false, "icon": "⭐" },
+
+    { "id": "anti-potential",      "label": "Загубленный потенциал", "unique": false, "icon": "🪦", "negative": true },
+    { "id": "anti-ending",         "label": "Худший финал",          "unique": false, "icon": "🪦", "negative": true },
+    { "id": "anti-release",        "label": "Сломано на релизе",     "unique": false, "icon": "🪦", "negative": true },
+    { "id": "anti-disappointment", "label": "Разочарование",         "unique": false, "icon": "🪦", "negative": true }
+  ],
+
+  "recommendations": [
+    { "id": "must",       "label": "Обязательно всем",  "color": "#f3ece1" },
+    { "id": "genre-fans", "label": "Фанатам жанра",     "color": "#cdc4b8" },
+    { "id": "taste",      "label": "На свой вкус",      "color": "#9b9289" },
+    { "id": "no",         "label": "Не советую",        "color": "#7c746c" },
+    { "id": "run",        "label": "Беги",              "color": "#635c55" }
+  ],
+
+  "statuses": [
+    { "id": "played",  "label": "Прошёл",     "inTierlist": true },
+    { "id": "playing", "label": "Играю",      "inTierlist": true },
+    { "id": "dropped", "label": "Дропнул",    "inTierlist": false },
+    { "id": "backlog", "label": "В бэклоге",  "inTierlist": false }
+  ]
+}

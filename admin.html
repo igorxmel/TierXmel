@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Личные оценки игр: тирлист, разбор по критериям и награды.">
+  <title>Админка</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%230c0b0a%27/%3E%3Crect x=%277%27 y=%278%27 width=%2718%27 height=%274%27 rx=%272%27 fill=%27%23fcead0%27/%3E%3Crect x=%277%27 y=%2714%27 width=%2713%27 height=%274%27 rx=%272%27 fill=%27%23d3a354%27/%3E%3Crect x=%277%27 y=%2720%27 width=%278%27 height=%274%27 rx=%272%27 fill=%27%238b6930%27/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Unbounded:wght@300;600;900&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin">
+  <header class="topbar">
+    <a class="brand" href="index.html">Тирлист<small>админка</small></a>
+    <nav class="nav">
+      <a class="nav__link" href="index.html">Тирлист</a>
+      <a class="nav__link" href="stats.html">Статистика</a>
+      <a class="nav__link" href="awards.html">Награды</a>
+      <a class="nav__link nav__link--on" href="admin.html">Админка</a>
+    </nav>
+    <span class="note note--tiny">Ключи хранятся только в этом браузере и в репозиторий не попадают.</span>
+  </header>
+
+  <main class="page page--narrow">
+    <details class="panel" id="settings">
+      <summary class="panel__title">Доступы</summary>
+      <div class="panel__body grid-form">
+        <label>RAWG API key
+          <input type="password" id="rawgKey" autocomplete="off" placeholder="rawg.io/apidocs">
+        </label>
+        <label>Репозиторий
+          <input type="text" id="ghRepo" autocomplete="off" placeholder="owner/name">
+        </label>
+        <label>Ветка
+          <input type="text" id="ghBranch" autocomplete="off" placeholder="main">
+        </label>
+        <label>GitHub token (fine-grained, Contents: write)
+          <input type="password" id="ghToken" autocomplete="off" placeholder="github_pat_...">
+        </label>
+        <div class="row-actions">
+          <button type="button" class="btn" id="checkAccess">Проверить доступ</button>
+          <span class="status" id="accessStatus"></span>
+        </div>
+      </div>
+    </details>
+
+    <section class="panel">
+      <h2 class="panel__title">Игра</h2>
+      <div class="panel__body">
+        <div class="searchbar">
+          <input type="search" id="search" placeholder="Название игры, найду в RAWG и заполню карточку">
+          <button type="button" class="btn" id="searchBtn">Найти</button>
+          <button type="button" class="btn" id="newBtn">Пустая карточка</button>
+          <select id="editExisting" class="select">
+            <option value="">Редактировать существующую</option>
+          </select>
+        </div>
+        <div class="results" id="results"></div>
+      </div>
+    </section>
+
+    <form class="panel" id="form" hidden>
+      <h2 class="panel__title" id="formTitle">Карточка</h2>
+      <div class="panel__body">
+
+        <div class="grid-form">
+          <label>Название<input type="text" id="f-title" required></label>
+          <label>Slug<input type="text" id="f-slug" required></label>
+          <label>Год<input type="number" id="f-year" min="1970" max="2100"></label>
+          <label>Разработчик<input type="text" id="f-developer"></label>
+          <label>Платформы (через запятую)<input type="text" id="f-platforms"></label>
+          <label>Теги (через запятую)<input type="text" id="f-tags"></label>
+          <label>Статус<select id="f-status" class="select"></select></label>
+          <label>Часов<input type="number" id="f-hours" min="0"></label>
+          <label>Пройдено (ГГГГ-ММ)<input type="text" id="f-finished" placeholder="2024-05"></label>
+          <label>Рекомендация<select id="f-rec" class="select"></select></label>
+        </div>
+
+        <fieldset class="block">
+          <legend>Профиль жанра: задаёт, как 900 баллов делятся между блоками</legend>
+          <div class="chips" id="f-profiles"></div>
+          <table class="budget" id="budgetTable"></table>
+        </fieldset>
+
+        <fieldset class="block block--accent">
+          <legend>Кайф ставится первым, до разбора</legend>
+          <p class="note">Холистическое суждение: насколько зашло. Поставь до того, как увидишь посчитанное качество, иначе подгонишь одно под другое.</p>
+          <div class="fun">
+            <input type="range" id="f-fun" min="0" max="100" step="1" value="50">
+            <output id="funOut">50</output>
+            <span class="tier-badge" id="funTier"></span>
+          </div>
+          <label class="wide">Вердикт одной строкой
+            <input type="text" id="f-verdict" maxlength="160" placeholder="Что это за игра в одном предложении">
+          </label>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend>Бейджи</legend>
+          <div class="chips" id="f-badges"></div>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend>Обложка</legend>
+          <div class="cover">
+            <img id="coverPreview" alt="Предпросмотр обложки" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" hidden>
+            <div class="cover__actions">
+              <input type="file" id="coverFile" accept="image/*">
+              <span class="note" id="coverNote">Берётся из RAWG, портретный кроп 300×450 в webp. Можно подложить свою.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend>Рецензия (markdown, необязательно)</legend>
+          <textarea id="f-review" rows="6" placeholder="Длинный текст. Сохраняется в data/reviews/<slug>.md"></textarea>
+        </fieldset>
+
+        <div class="depth" id="depthSwitch">
+          <button type="button" class="btn" id="toDetailed" style="white-space:nowrap">Разобрать подробно по критериям</button>
+          <span class="note">Без разбора игра сохранится как быстрая оценка: попадёт в тирлист по кайфу с молнией и ляжет на полку «Ждут разбора».</span>
+        </div>
+
+        <div id="detailed" hidden>
+          <div class="blocks" id="blocks"></div>
+          <p class="note">Цифра от 0 до 9 ставит оценку, Tab ведёт к следующему критерию, <kbd>/</kbd> отмечает «н/д». Нетронутые критерии подсвечены: пятёрка по умолчанию это «норма жанра», а не «я не думал».</p>
+        </div>
+      </div>
+
+      <div class="summary" id="summary"></div>
+
+      <div class="panel__body row-actions">
+        <button type="button" class="btn btn--primary" id="saveBtn">Сохранить и закоммитить</button>
+        <button type="button" class="btn" id="exportBtn">Скачать games.json</button>
+        <span class="status" id="saveStatus"></span>
+      </div>
+    </form>
+  </main>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
