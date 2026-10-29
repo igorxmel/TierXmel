@@ -67,7 +67,7 @@ function persistSettings() {
 function fillSelects() {
   const option = (item) => `<option value="${item.id}">${item.label}</option>`;
   $('f-status').innerHTML = meta.statuses.map(option).join('');
-  $('f-rec').innerHTML = '<option value="">— не выбрано —</option>' + meta.recommendations.map(option).join('');
+  $('f-rec').innerHTML = '<option value="">Не выбрано</option>' + meta.recommendations.map(option).join('');
 
   $('f-profiles').innerHTML = '';
   for (const profile of meta.profiles) {

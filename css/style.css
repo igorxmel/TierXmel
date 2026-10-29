@@ -961,9 +961,12 @@ input[type="range"] { accent-color: var(--paper); }
 .budget td b { display: block; font-family: var(--display); font-size: 15px; font-weight: 600; }
 .budget td span { color: var(--paper-faint); font-size: 10px; }
 
-.fun { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
-.fun input[type="range"] { flex: 1; }
-.fun output { min-width: 42px; font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+/* Колонки под число и ярлык тира фиксированы: иначе ярлык меняет длину
+   при движении, полоска сжимается, и ползунок уезжает из-под курсора. */
+.fun { display: grid; grid-template-columns: minmax(0, 1fr) 56px 230px; align-items: center; gap: 14px; margin-bottom: 12px; }
+.fun input[type="range"] { width: 100%; }
+.fun .tier-badge { justify-self: start; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.fun output { text-align: right; font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 
 .tier-badge {
   --tier: var(--line);
@@ -1024,6 +1027,8 @@ kbd { padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; backg
 /* ------------------------------------------------------------- адаптив --- */
 
 @media (max-width: 860px) {
+  .fun { grid-template-columns: minmax(0, 1fr) 56px; }
+  .fun .tier-badge { grid-column: 1 / -1; }
   :root { --tile: 92px; }
   .card__head { grid-template-columns: 140px 1fr; }
   .crit { grid-template-columns: 1fr; gap: 6px; }

@@ -59,14 +59,14 @@
 
         <div class="grid-form">
           <label>Название<input type="text" id="f-title" required></label>
-          <label>Slug<input type="text" id="f-slug" required></label>
+          <label>Адрес страницы<input type="text" id="f-slug" required title="Последняя часть ссылки: …/game/undertale/. Латиница, цифры и дефисы. Заполняется сам из названия."></label>
           <label>Год<input type="number" id="f-year" min="1970" max="2100"></label>
           <label>Разработчик<input type="text" id="f-developer"></label>
           <label>Платформы (через запятую)<input type="text" id="f-platforms"></label>
           <label>Теги (через запятую)<input type="text" id="f-tags"></label>
           <label>Статус<select id="f-status" class="select"></select></label>
-          <label>Часов<input type="number" id="f-hours" min="0"></label>
-          <label>Пройдено (ГГГГ-ММ)<input type="text" id="f-finished" placeholder="2024-05"></label>
+          <label>Наиграно часов<input type="number" id="f-hours" min="0" placeholder="необязательно"></label>
+          <label>Когда прошёл (год-месяц)<input type="text" id="f-finished" placeholder="например 2024-05"></label>
           <label>Рекомендация<select id="f-rec" class="select"></select></label>
         </div>
 
